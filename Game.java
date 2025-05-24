@@ -3,4 +3,7 @@ public class Game {
     public void init() {
         renderer.init();
     }
+    public void run(){
+        renderer.render();
+    }
 }

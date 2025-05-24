@@ -1,5 +1,4 @@
-import java.awt.Graphics;
-import java.awt.Graphics2D;
+import java.awt.Font;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -16,6 +15,11 @@ public class Renderer {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(1600, 900);
 
+        panel.setBackground(java.awt.Color.BLACK);
+        JLabel label = new JLabel("Idle Fractal");
+        label.setFont(Font.getFont("null"));
+        panel.add(label);
+
         // Add the panel to the frame
         frame.add(panel);
 
@@ -26,8 +30,6 @@ public class Renderer {
     public void render() {
         // This method will be used to render the game
         // For now, we will just set the background color
-        panel.setBackground(java.awt.Color.BLACK);
-        JLabel label = new JLabel("Idle Fractal");
-        panel.add(label);
+        
     }
 }
