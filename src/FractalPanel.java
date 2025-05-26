@@ -2,14 +2,17 @@ package src;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.List;
 
 public class FractalPanel extends JPanel {
     private final List<LineSegment> segments;
     private double percent = 1.0;
+    private double energy = 0.0;
+    private String unit = "";
 
     public FractalPanel(List<LineSegment> segments) {
-        this.segments = segments;
+        this.segments = new ArrayList<>(segments);
     }
 
     public void setPercent(double percent) {
@@ -17,10 +20,35 @@ public class FractalPanel extends JPanel {
         repaint();
     }
 
+    public void setEnergy(double energy, String unit) {
+        this.energy = energy;
+        this.unit = unit;
+    }
+
+    public void setSegments(List<LineSegment> segments) {
+        this.segments.clear();
+        this.segments.addAll(segments);
+        repaint();
+    }
+
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         drawFractalTree(g, segments, percent);
+
+//         Draw energy text in the top-left corner
+//         g.setColor(Color.WHITE);
+//         g.setFont(new Font("Arial", Font.BOLD, 18));
+//         g.drawString(formatJoules(energy), 20, 30);
+    }
+
+    // Add this helper method to format Joules/kJ
+    private String formatJoules(double value) {
+        if (value >= 1000) {
+            return String.format("%.2f kJ", value / 1000.0);
+        } else {
+            return String.format("%d Joules", (int)value);
+        }
     }
 
     public static void drawFractalTree(Graphics g, List<LineSegment> segments, double percent) {
