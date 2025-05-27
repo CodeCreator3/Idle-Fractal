@@ -78,7 +78,7 @@ public class Renderer {
 
             // Fractal drawing
             List<LineSegment> segments = game.getFractalSegments(idx);
-            FractalPanel panel = new FractalPanel(segments);
+            FractalPanel panel = new FractalPanel(segments, singleFractalPanel.getX()+(675.0/n)+10*(n-1), 550.0);
             panel.setBackground(Color.BLACK);
             panel.setPreferredSize(new Dimension(400, 400));
             panel.setEnergy(game.energy, "Joules");
@@ -196,20 +196,22 @@ public class Renderer {
 
     // Helper methods for displaying info
     private String formatJoules(double value) {
+        if (value >= 1000000) {
+            return String.format("%.2f mJ", value / 1000000.0);
+        } 
         if (value >= 1000) {
             return String.format("%.2f kJ", value / 1000.0);
-        } else {
-            return String.format("%d Joules", (int)value);
-        }
+        } 
+        return String.format("%d Joules", (int)value);
     }
 
     private String getSpeedInfo(Game game, int idx) {
-        double cost = (20.0 * (idx + 1)) * Math.pow(1.8, game.speedLevels[idx] - 1);
+        double cost = game.getSpeedCost(idx);
         return "Level: " + game.speedLevels[idx] + "   Cost: " + formatJoules(cost);
     }
 
     private String getComplexityInfo(Game game, int idx) {
-        double cost = (30.0 * (idx + 1)) * Math.pow(2.0, game.complexityLevels[idx] - 1);
+        double cost = game.getComplexityCost(idx);
         return "Level: " + game.complexityLevels[idx] + "   Cost: " + formatJoules(cost);
     }
 

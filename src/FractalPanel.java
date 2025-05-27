@@ -10,9 +10,12 @@ public class FractalPanel extends JPanel {
     private double percent = 1.0;
     private double energy = 0.0;
     private String unit = "";
+    private double xOffset, yOffset;
 
-    public FractalPanel(List<LineSegment> segments) {
+    public FractalPanel(List<LineSegment> segments, double xOffset, double yOffset) {
         this.segments = new ArrayList<>(segments);
+        this.xOffset = xOffset;
+        this.yOffset = yOffset;
     }
 
     public void setPercent(double percent) {
@@ -34,7 +37,7 @@ public class FractalPanel extends JPanel {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        drawFractalTree(g, segments, percent);
+        drawFractalTree(g, segments, percent, xOffset, yOffset);
 
 //         Draw energy text in the top-left corner
 //         g.setColor(Color.WHITE);
@@ -51,7 +54,7 @@ public class FractalPanel extends JPanel {
         }
     }
 
-    public static void drawFractalTree(Graphics g, List<LineSegment> segments, double percent) {
+    public static void drawFractalTree(Graphics g, List<LineSegment> segments, double percent, double xOffset, double yOffset) {
         Graphics2D g2d = (Graphics2D) g;
         g2d.setColor(Color.WHITE);
         g2d.setStroke(new BasicStroke(1.5f));
@@ -71,19 +74,20 @@ public class FractalPanel extends JPanel {
 
         for (LineSegment seg : segments) {
             double segLength = distance(seg);
+            LineSegment newSeg = new LineSegment(seg.x1 + xOffset, seg.y1 + yOffset, seg.x2 + xOffset, seg.y2 + yOffset);
             if (drawnLength + segLength <= targetLength) {
                 // Draw full segment
-                g2d.drawLine((int) seg.x1, (int) seg.y1, (int) seg.x2, (int) seg.y2);
+                g2d.drawLine((int) newSeg.x1, (int) newSeg.y1, (int) newSeg.x2, (int) newSeg.y2);
                 drawnLength += segLength;
             } else {
                 // Draw partial segment
                 double remaining = targetLength - drawnLength;
                 double t = remaining / segLength;
 
-                double x2 = seg.x1 + t * (seg.x2 - seg.x1);
-                double y2 = seg.y1 + t * (seg.y2 - seg.y1);
+                double x2 = newSeg.x1 + t * (newSeg.x2 - newSeg.x1);
+                double y2 = newSeg.y1 + t * (newSeg.y2 - newSeg.y1);
 
-                g2d.drawLine((int) seg.x1, (int) seg.y1, (int) x2, (int) y2);
+                g2d.drawLine((int) newSeg.x1, (int) newSeg.y1, (int) x2, (int) y2);
                 break;
             }
         }

@@ -6,16 +6,15 @@ import java.util.List;
 public class Game {
     private Renderer renderer = new Renderer();
     private double timeSeconds = 5.0;
-    private double progress = 0.0;
-    public double energy = 30000.0;
-    private final double[] BASE_ENERGY = {10.0, 20.0, 40.0}; // Tree, Snowflake, Fern
+    public double energy = 0.0;
+    private final double[] BASE_ENERGY = {10.0, 20.0, 40.0, 80.0}; // Tree, Snowflake, Fern
     private final String ENERGY_UNIT = "Joules";
 
-    public String[] fractalTypes = {"Tree", "Snowflake", "Fern"};
-    public double[] unlockThresholds = {0, 5000, 25000}; // Cost to unlock
-    public boolean[] fractalUnlocked = {true, false, false};
-    public int[] speedLevels = {1, 1, 1};
-    public int[] complexityLevels = {1, 1, 1};
+    public String[] fractalTypes = {"Tree", "Snowflake", "Fern", "Triangle"};
+    public double[] unlockThresholds = {0, 5000, 25000, 5000000}; // Cost to unlock
+    public boolean[] fractalUnlocked = {true, false, false, false};
+    public int[] speedLevels = {1, 1, 1, 1};
+    public int[] complexityLevels = {1, 1, 1, 1};
 
     public int unlockedFractals = 1;
     public int currentFractal = 0;
@@ -39,35 +38,36 @@ public class Game {
             if (progresses[idx] >= 1.0) {
                 progresses[idx] = 0.0;
                 // Give more energy for higher fractals
-                energy += BASE_ENERGY[idx] * (1 + idx) * Math.sqrt(complexityLevels[idx]);
+                energy += BASE_ENERGY[idx] * (Math.pow(1+ idx, 4)) * complexityLevels[idx];
             }
             renderer.fractalPanels[idx].setPercent(progresses[idx]);
         }
         renderer.updateAllFractalPanelEnergy(energy, ENERGY_UNIT);
         renderer.updateEnergyDisplay(energy, ENERGY_UNIT);
+        renderer.refreshUnlockPanel();
     }
 
     public List<LineSegment> getFractalSegments(int idx) {
-        int width = 800, height = 600;
-        double startX = width / 2.0;
-        double startY = height - 50;
         switch (idx) {
             case 0:
                 return FractalGenerator.generateFractalTree(
-                    startX, startY, -90, 100, complexityLevels[idx], 25, 0.7);
+                    0, 0, -90, 100, complexityLevels[idx], 25, 0.7);
             case 1:
                 return FractalGenerator.generateKochSnowflake(
-                    width / 2.0, height / 2.0, 200, complexityLevels[idx]);
+                    0, -200, 200, complexityLevels[idx]);
             case 2:
                 return FractalGenerator.generateFern(
-                    width / 2.0, height - 50, complexityLevels[idx]);
+                    0, 0, complexityLevels[idx]);
+            case 3:
+                return FractalGenerator.generateSierpinskiTriangle(
+                    0, -200, 200, complexityLevels[idx]);
             default:
                 return new ArrayList<>();
         }
     }
 
     public boolean buySpeedUpgrade(int idx) {
-        double cost = (20.0 * (idx + 1)) * Math.pow(1.8, speedLevels[idx] - 1);
+        double cost = getSpeedCost(idx);
         if (energy >= cost) {
             energy -= cost;
             speedLevels[idx]++;
@@ -76,8 +76,12 @@ public class Game {
         return false;
     }
 
+    public double getSpeedCost(int idx) {
+        return (20.0 * (Math.pow(idx + 1, 5))) * Math.pow(1.8, speedLevels[idx] - 1);
+    }
+
     public boolean buyComplexityUpgrade(int idx) {
-        double cost = (30.0 * (idx + 1)) * Math.pow(2.0, complexityLevels[idx] - 1);
+        double cost = getComplexityCost(idx);
         if (energy >= cost) {
             energy -= cost;
             complexityLevels[idx]++;
@@ -88,6 +92,10 @@ public class Game {
             return true;
         }
         return false;
+    }
+
+    public double getComplexityCost(int idx) {
+        return (30.0 * (Math.pow(idx + 1, 5))) * Math.pow(2.0, complexityLevels[idx] - 1);
     }
 
     public boolean unlockFractal(int idx) {
