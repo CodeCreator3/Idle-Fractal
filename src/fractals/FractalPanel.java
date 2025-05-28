@@ -1,21 +1,28 @@
-package src;
+package src.fractals;
 
 import javax.swing.*;
+
+import src.shapes.Circle;
+import src.shapes.LineSegment;
+
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class FractalPanel extends JPanel {
-    private final List<LineSegment> segments;
+    private final Optional<List<LineSegment>> segments;
+    private final Optional<List<Circle>> circles;
     private double percent = 1.0;
     private double energy = 0.0;
     private String unit = "";
     private double xOffset, yOffset;
 
     public FractalPanel(List<LineSegment> segments, double xOffset, double yOffset) {
-        this.segments = new ArrayList<>(segments);
+        this.segments = Optional.of(new ArrayList<>(segments));
         this.xOffset = xOffset;
         this.yOffset = yOffset;
+        circles = Optional.empty();
     }
 
     public void setPercent(double percent) {
@@ -29,15 +36,19 @@ public class FractalPanel extends JPanel {
     }
 
     public void setSegments(List<LineSegment> segments) {
-        this.segments.clear();
-        this.segments.addAll(segments);
+        this.segments.get().clear();
+        this.segments.get().addAll(segments);
         repaint();
     }
 
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        drawFractalTree(g, segments, percent, xOffset, yOffset);
+        if(!segments.isEmpty()){
+
+        } else {
+            drawFractalSegments(g, segments.get(), percent, xOffset, yOffset);
+        }
 
 //         Draw energy text in the top-left corner
 //         g.setColor(Color.WHITE);
@@ -54,7 +65,7 @@ public class FractalPanel extends JPanel {
         }
     }
 
-    public static void drawFractalTree(Graphics g, List<LineSegment> segments, double percent, double xOffset, double yOffset) {
+    public static void drawFractalSegments(Graphics g, List<LineSegment> segments, double percent, double xOffset, double yOffset) {
         Graphics2D g2d = (Graphics2D) g;
         g2d.setColor(Color.WHITE);
         g2d.setStroke(new BasicStroke(1.5f));

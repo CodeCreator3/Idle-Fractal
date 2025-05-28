@@ -1,20 +1,24 @@
 package src;
 
+
 import java.util.ArrayList;
 import java.util.List;
+
+import src.fractals.FractalGenerator;
+import src.shapes.LineSegment;
 
 public class Game {
     private Renderer renderer = new Renderer();
     private double timeSeconds = 5.0;
-    public double energy = 0.0;
-    private final double[] BASE_ENERGY = {10.0, 20.0, 40.0, 80.0}; // Tree, Snowflake, Fern
+    public double energy = 60000000.0;
+    private final double[] BASE_ENERGY = {10.0, 20.0, 40.0, 80.0, 100.0}; // Tree, Snowflake, Fern
     private final String ENERGY_UNIT = "Joules";
 
-    public String[] fractalTypes = {"Tree", "Snowflake", "Fern", "Triangle"};
-    public double[] unlockThresholds = {0, 5000, 25000, 5000000}; // Cost to unlock
-    public boolean[] fractalUnlocked = {true, false, false, false};
-    public int[] speedLevels = {1, 1, 1, 1};
-    public int[] complexityLevels = {1, 1, 1, 1};
+    public String[] fractalTypes = {"Tree", "Snowflake", "Fern", "Triangle", "Circle"};
+    public double[] unlockThresholds = {0, 5000, 25000, 5000000, 50000000}; // Cost to unlock
+    public boolean[] fractalUnlocked = {true, false, false, false, false};
+    public int[] speedLevels = {1, 1, 1, 1, 1};
+    public int[] complexityLevels = {1, 1, 1, 1, 1};
 
     public int unlockedFractals = 1;
     public int currentFractal = 0;
@@ -60,6 +64,9 @@ public class Game {
                     0, 0, complexityLevels[idx]);
             case 3:
                 return FractalGenerator.generateSierpinskiTriangle(
+                    0, -200, 200, complexityLevels[idx]);
+            case 4:
+                return FractalGenerator.generateApollonianGasket(
                     0, -200, 200, complexityLevels[idx]);
             default:
                 return new ArrayList<>();

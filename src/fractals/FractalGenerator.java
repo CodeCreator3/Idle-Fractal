@@ -1,6 +1,8 @@
-package src;
+package src.fractals;
 import java.util.ArrayList;
 import java.util.List;
+
+import src.shapes.LineSegment;
 
 public class FractalGenerator {
     public static List<LineSegment> generateFractalTree(
@@ -122,5 +124,27 @@ public class FractalGenerator {
             generateSierpinskiHelper(centerX + size / 4.0, centerY, (int) (size / 2.0), depth - 1, segments);
             generateSierpinskiHelper(centerX, centerY - size * Math.sqrt(3) / 4.0, (int) (size / 2.0), depth - 1, segments);
         }
+    }
+
+    public static List<LineSegment> generateApollonianGasket(
+            double x, double y, double radius, int depth
+    ) {
+        List<LineSegment> segments = new ArrayList<>();
+        generateApollonianHelper(x, y, radius, depth, segments);
+        return segments;
+    }
+
+    private static void generateApollonianHelper(
+            double x, double y, double radius, int depth, List<LineSegment> segments
+    ) {
+        if (depth == 0) return;
+
+        // Draw the circle
+        segments.add(new LineSegment(x - radius, y, x + radius, y)); // Horizontal line for simplicity
+
+        // Recursively draw smaller circles
+        double newRadius = radius / 2.0;
+        generateApollonianHelper(x - newRadius, y, newRadius, depth - 1, segments);
+        generateApollonianHelper(x + newRadius, y, newRadius, depth - 1, segments);
     }
 }

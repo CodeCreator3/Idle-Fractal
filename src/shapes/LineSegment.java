@@ -1,10 +1,10 @@
-package src;
+package src.shapes;
 
 
 public class LineSegment {
     public double x1, y1, x2, y2;
 
-    LineSegment(double x1, double y1, double x2, double y2) {
+    public LineSegment(double x1, double y1, double x2, double y2) {
         this.x1 = x1;
         this.y1 = y1;
         this.x2 = x2;

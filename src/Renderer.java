@@ -7,6 +7,9 @@ import java.util.List;
 
 import javax.swing.*;
 
+import src.fractals.FractalPanel;
+import src.shapes.LineSegment;
+
 public class Renderer {
     private JFrame frame = new JFrame("Idle Fractal");
     private JPanel containerPanel = new JPanel();
