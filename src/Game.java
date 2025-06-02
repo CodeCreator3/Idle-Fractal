@@ -11,7 +11,7 @@ import src.shapes.Shape;
 public class Game {
     private Renderer renderer = new Renderer();
     private double timeSeconds = 5.0;
-    public double energy = 60000000.0;
+    public double energy = 0.0;
     private final double[] BASE_ENERGY = {10.0, 20.0, 40.0, 80.0, 100.0}; // Tree, Snowflake, Fern
     private final String ENERGY_UNIT = "Joules";
 
