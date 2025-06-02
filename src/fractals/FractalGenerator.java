@@ -1,15 +1,19 @@
 package src.fractals;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Vector;
 
+import src.math.ComplexNumber;
+import src.shapes.Circle;
 import src.shapes.LineSegment;
+import src.shapes.Shape;
 
 public class FractalGenerator {
-    public static List<LineSegment> generateFractalTree(
+    public static List<Shape> generateFractalTree(
             double x1, double y1, double angle, double length,
-            int depth, double angleDelta, double lengthScale
-    ) {
-        List<LineSegment> segments = new ArrayList<>();
+            int depth, double angleDelta, double lengthScale) {
+        List<Shape> segments = new ArrayList<>();
         generateTreeHelper(x1, y1, angle, length, depth, angleDelta, lengthScale, segments);
         return segments;
     }
@@ -17,21 +21,23 @@ public class FractalGenerator {
     private static void generateTreeHelper(
             double x1, double y1, double angle, double length,
             int depth, double angleDelta, double lengthScale,
-            List<LineSegment> segments
-    ) {
-        if (depth <= 0 || length < 1) return;
+            List<Shape> segments) {
+        if (depth <= 0 || length < 1)
+            return;
 
         double x2 = x1 + length * Math.cos(Math.toRadians(angle));
         double y2 = y1 + length * Math.sin(Math.toRadians(angle));
 
         segments.add(new LineSegment(x1, y1, x2, y2));
 
-        generateTreeHelper(x2, y2, angle - angleDelta, length * lengthScale, depth - 1, angleDelta, lengthScale, segments);
-        generateTreeHelper(x2, y2, angle + angleDelta, length * lengthScale, depth - 1, angleDelta, lengthScale, segments);
+        generateTreeHelper(x2, y2, angle - angleDelta, length * lengthScale, depth - 1, angleDelta, lengthScale,
+                segments);
+        generateTreeHelper(x2, y2, angle + angleDelta, length * lengthScale, depth - 1, angleDelta, lengthScale,
+                segments);
     }
 
-    public static List<LineSegment> generateKochSnowflake(double centerX, double centerY, int size, int depth) {
-        List<LineSegment> segments = new ArrayList<>();
+    public static List<Shape> generateKochSnowflake(double centerX, double centerY, int size, int depth) {
+        List<Shape> segments = new ArrayList<>();
         double height = size * Math.sqrt(3) / 2;
 
         // Calculate the three points of the equilateral triangle
@@ -50,7 +56,7 @@ public class FractalGenerator {
         return segments;
     }
 
-    private static void generateKochEdge(double x1, double y1, double x2, double y2, int depth, List<LineSegment> segments) {
+    private static void generateKochEdge(double x1, double y1, double x2, double y2, int depth, List<Shape> segments) {
         if (depth == 0) {
             segments.add(new LineSegment(x1, y1, x2, y2));
             return;
@@ -75,14 +81,16 @@ public class FractalGenerator {
         generateKochEdge(xB, yB, x2, y2, depth - 1, segments);
     }
 
-    public static List<LineSegment> generateFern(double centerX, double centerY, int depth) {
-        List<LineSegment> segments = new ArrayList<>();
+    public static List<Shape> generateFern(double centerX, double centerY, int depth) {
+        List<Shape> segments = new ArrayList<>();
         generateFernHelper(centerX, centerY, -90, 60, depth, segments);
         return segments;
     }
 
-    private static void generateFernHelper(double x1, double y1, double angle, double length, int depth, List<LineSegment> segments) {
-        if (depth <= 0 || length < 2) return;
+    private static void generateFernHelper(double x1, double y1, double angle, double length, int depth,
+            List<Shape> segments) {
+        if (depth <= 0 || length < 2)
+            return;
 
         double x2 = x1 + length * Math.cos(Math.toRadians(angle));
         double y2 = y1 + length * Math.sin(Math.toRadians(angle));
@@ -98,13 +106,14 @@ public class FractalGenerator {
         generateFernHelper(x2, y2, angle + 45, length * 0.38, depth - 2, segments);
     }
 
-    public static List<LineSegment> generateSierpinskiTriangle(double centerX, double centerY, int size, int depth) {
-        List<LineSegment> segments = new ArrayList<>();
+    public static List<Shape> generateSierpinskiTriangle(double centerX, double centerY, int size, int depth) {
+        List<Shape> segments = new ArrayList<>();
         generateSierpinskiHelper(centerX, centerY, size, depth, segments);
         return segments;
     }
 
-    private static void generateSierpinskiHelper(double centerX, double centerY, int size, int depth, List<LineSegment> segments) {
+    private static void generateSierpinskiHelper(double centerX, double centerY, int size, int depth,
+            List<Shape> segments) {
         if (depth == 0) {
             double height = size * Math.sqrt(3) / 2;
 
@@ -122,29 +131,68 @@ public class FractalGenerator {
         } else {
             generateSierpinskiHelper(centerX - size / 4.0, centerY, (int) (size / 2.0), depth - 1, segments);
             generateSierpinskiHelper(centerX + size / 4.0, centerY, (int) (size / 2.0), depth - 1, segments);
-            generateSierpinskiHelper(centerX, centerY - size * Math.sqrt(3) / 4.0, (int) (size / 2.0), depth - 1, segments);
+            generateSierpinskiHelper(centerX, centerY - size * Math.sqrt(3) / 4.0, (int) (size / 2.0), depth - 1,
+                    segments);
         }
     }
 
-    public static List<LineSegment> generateApollonianGasket(
-            double x, double y, double radius, int depth
-    ) {
-        List<LineSegment> segments = new ArrayList<>();
-        generateApollonianHelper(x, y, radius, depth, segments);
+    public static List<Shape> generateApollonianGasket(
+            double x, double y, double radius, int depth) {
+        List<Circle> circles = new ArrayList<>();
+        circles.add(new Circle(x, y, radius)); // Add the initial circle
+        double smallerRadius = radius / (2.0 / Math.sqrt(3) + 1.0); // Define the radius for smaller circles
+        if (depth > 1) {
+            double offset = (radius - smallerRadius) / 2.0;
+            circles.add(new Circle(x, y - (radius - smallerRadius), smallerRadius));
+            circles.add(new Circle(x + smallerRadius, y + offset, smallerRadius));
+            circles.add(new Circle(x - smallerRadius, y + offset, smallerRadius));
+            if (depth > 2) {
+                generateApollonianHelper(depth, 1, circles);
+            }
+        }
+
+        List<Shape> segments = new ArrayList<>();
+        for (Circle circle : circles) {
+            segments.add(circle);
+        }
         return segments;
     }
 
-    private static void generateApollonianHelper(
-            double x, double y, double radius, int depth, List<LineSegment> segments
-    ) {
-        if (depth == 0) return;
+    private static void generateApollonianHelper(int depth, int index, List<Circle> circles) {
+        if (depth == 2)
+            return;
 
         // Draw the circle
-        segments.add(new LineSegment(x - radius, y, x + radius, y)); // Horizontal line for simplicity
+        circles.add(findNewCircle(circles, new int[] { 0, index, index + 1 }));
+        circles.add(findNewCircle(circles, new int[] { 0, index + 1, index + 2 }));
+        circles.add(findNewCircle(circles, new int[] { 0, index + 2, index + 3 }));
 
-        // Recursively draw smaller circles
-        double newRadius = radius / 2.0;
-        generateApollonianHelper(x - newRadius, y, newRadius, depth - 1, segments);
-        generateApollonianHelper(x + newRadius, y, newRadius, depth - 1, segments);
+        generateApollonianHelper(depth - 1, index + 3, circles);
+    }
+
+    private static Circle findNewCircle(List<Circle> circles, int[] indices) {
+        double[] otherKs = new double[indices.length];
+        for (int i = 0; i < indices.length; i++) {
+            Circle circle = circles.get(indices[i]);
+            otherKs[i] = 1.0 / circle.r;
+        }
+        otherKs[0] *= -1.0;
+        double k = otherKs[0] + otherKs[1] + otherKs[2]
+                + 2 * Math.sqrt(otherKs[0] * otherKs[1] + otherKs[1] * otherKs[2] + otherKs[2] * otherKs[0]);
+        ComplexNumber[] centers = new ComplexNumber[indices.length];
+        for (int i = 0; i < indices.length; i++) {
+            centers[i] = circles.get(indices[i]).getCenter();
+        }
+        ComplexNumber center = 
+                centers[0].multiply(otherKs[0])
+                .add(centers[1].multiply(otherKs[1]))
+                .add(centers[2].multiply(otherKs[2]))
+                .add(centers[0].multiply(centers[1]).multiply(otherKs[0]).multiply(otherKs[1])
+                        .add(centers[1].multiply(centers[2]).multiply(otherKs[1]).multiply(otherKs[2]))
+                        .add(centers[0].multiply(centers[2]).multiply(otherKs[0]).multiply(otherKs[2])).sqrt()
+                        .multiply(2))
+                .multiply(1.0 / k);
+        
+        return new Circle(center.a, center.b, 1.0 / k);
     }
 }

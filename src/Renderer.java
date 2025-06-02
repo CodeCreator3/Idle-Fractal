@@ -1,14 +1,12 @@
 package src;
 
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.List;
 
 import javax.swing.*;
 
 import src.fractals.FractalPanel;
-import src.shapes.LineSegment;
+import src.shapes.Shape;
 
 public class Renderer {
     private JFrame frame = new JFrame("Idle Fractal");
@@ -80,7 +78,7 @@ public class Renderer {
             singleFractalPanel.setBackground(Color.BLACK);
 
             // Fractal drawing
-            List<LineSegment> segments = game.getFractalSegments(idx);
+            List<Shape> segments = game.getFractalShapes(idx);
             FractalPanel panel = new FractalPanel(segments, singleFractalPanel.getX()+(675.0/n)+10*(n-1), 550.0);
             panel.setBackground(Color.BLACK);
             panel.setPreferredSize(new Dimension(400, 400));

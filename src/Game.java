@@ -6,6 +6,7 @@ import java.util.List;
 
 import src.fractals.FractalGenerator;
 import src.shapes.LineSegment;
+import src.shapes.Shape;
 
 public class Game {
     private Renderer renderer = new Renderer();
@@ -51,7 +52,7 @@ public class Game {
         renderer.refreshUnlockPanel();
     }
 
-    public List<LineSegment> getFractalSegments(int idx) {
+    public List<Shape> getFractalShapes(int idx) {
         switch (idx) {
             case 0:
                 return FractalGenerator.generateFractalTree(
@@ -67,7 +68,7 @@ public class Game {
                     0, -200, 200, complexityLevels[idx]);
             case 4:
                 return FractalGenerator.generateApollonianGasket(
-                    0, -200, 200, complexityLevels[idx]);
+                    0, -200, 130, complexityLevels[idx]);
             default:
                 return new ArrayList<>();
         }
@@ -93,8 +94,8 @@ public class Game {
             energy -= cost;
             complexityLevels[idx]++;
             // Update the fractal's segments after upgrading complexity
-            List<LineSegment> newSegments = getFractalSegments(idx);
-            renderer.fractalPanels[idx].setSegments(newSegments);
+            List<Shape> newSegments = getFractalShapes(idx);
+            renderer.fractalPanels[idx].setShapes(newSegments);
             renderer.fractalPanels[idx].repaint();
             return true;
         }

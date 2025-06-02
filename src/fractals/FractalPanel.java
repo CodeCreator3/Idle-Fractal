@@ -4,6 +4,7 @@ import javax.swing.*;
 
 import src.shapes.Circle;
 import src.shapes.LineSegment;
+import src.shapes.Shape;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -11,18 +12,16 @@ import java.util.List;
 import java.util.Optional;
 
 public class FractalPanel extends JPanel {
-    private final Optional<List<LineSegment>> segments;
-    private final Optional<List<Circle>> circles;
+    private final List<Shape> shapes;
     private double percent = 1.0;
     private double energy = 0.0;
     private String unit = "";
     private double xOffset, yOffset;
 
-    public FractalPanel(List<LineSegment> segments, double xOffset, double yOffset) {
-        this.segments = Optional.of(new ArrayList<>(segments));
+    public FractalPanel(List<Shape> shapes, double xOffset, double yOffset) {
+        this.shapes = new ArrayList<>(shapes);
         this.xOffset = xOffset;
         this.yOffset = yOffset;
-        circles = Optional.empty();
     }
 
     public void setPercent(double percent) {
@@ -35,25 +34,32 @@ public class FractalPanel extends JPanel {
         this.unit = unit;
     }
 
-    public void setSegments(List<LineSegment> segments) {
-        this.segments.get().clear();
-        this.segments.get().addAll(segments);
+    public void setShapes(List<Shape> shapes) {
+        this.shapes.clear();
+        this.shapes.addAll(shapes);
         repaint();
     }
 
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        if(!segments.isEmpty()){
-
+        if(shapes.get(0) instanceof Circle) {
+            List<Circle> circles = new ArrayList<>();
+            for (Shape shape : shapes) {
+                if (shape instanceof Circle circle) {
+                    circles.add(circle);
+                }
+            }
+            drawFractalCircles(g, circles, percent, xOffset, yOffset);
         } else {
-            drawFractalSegments(g, segments.get(), percent, xOffset, yOffset);
+            List<LineSegment> segments = new ArrayList<>();
+            for (Shape shape : shapes) {
+                if (shape instanceof LineSegment lineSegment) {
+                    segments.add(lineSegment);
+                }
+            }
+            drawFractalSegments(g, segments, percent, xOffset, yOffset);
         }
-
-//         Draw energy text in the top-left corner
-//         g.setColor(Color.WHITE);
-//         g.setFont(new Font("Arial", Font.BOLD, 18));
-//         g.drawString(formatJoules(energy), 20, 30);
     }
 
     // Add this helper method to format Joules/kJ
@@ -104,10 +110,50 @@ public class FractalPanel extends JPanel {
         }
     }
 
+    public static void drawFractalCircles(Graphics g, List<Circle> circles, double percent, double xOffset, double yOffset) {
+        Graphics2D g2d = (Graphics2D) g;
+        g2d.setColor(Color.WHITE);
+        g2d.setStroke(new BasicStroke(1.5f));
+
+        // Clamp percent to [0.0, 1.0]
+        percent = Math.max(0.0, Math.min(1.0, percent));
+
+        // Step 1: Compute total length of the tree
+        double totalLength = 0.0;
+        for (Circle circle : circles) {
+            totalLength += distance(circle);
+        }
+
+        // Step 2: Determine how much length to draw
+        double targetLength = totalLength * percent;
+        double drawnLength = 0.0;
+
+        for (Circle circle : circles) {
+            double circleLength = distance(circle);
+            Circle newCircle = new Circle(circle.x + xOffset, circle.y + yOffset, circle.r);
+            if (drawnLength + circleLength <= targetLength) {
+                // Draw full segment
+                g2d.drawArc((int)(newCircle.x - newCircle.r), (int)(newCircle.y - newCircle.r), (int)(newCircle.r * 2), (int)(newCircle.r * 2), 0,  360);
+                drawnLength += circleLength;
+            } else {
+                // Draw partial segment
+                double remaining = targetLength - drawnLength;
+                double t = remaining / circleLength;
+
+                g2d.drawArc((int)(newCircle.x - newCircle.r), (int)(newCircle.y - newCircle.r), (int)(newCircle.r * 2), (int)(newCircle.r * 2), 0, (int) (360 * t));
+                break;
+            }
+        }
+    }
+
     // Helper function to compute length of a segment
     private static double distance(LineSegment seg) {
         double dx = seg.x2 - seg.x1;
         double dy = seg.y2 - seg.y1;
         return Math.sqrt(dx * dx + dy * dy);
+    }
+
+    private static double distance(Circle circle) {
+        return 2 * Math.PI * circle.r; // Circumference of the circle
     }
 }

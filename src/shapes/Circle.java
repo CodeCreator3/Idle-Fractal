@@ -1,17 +1,24 @@
 package src.shapes;
 
-public class Circle {
+import java.util.Vector;
+
+import src.math.ComplexNumber;
+
+public class Circle extends Shape {
     public double x, y, r, t;
 
-    Circle(double x, double y, double r, double t) {
+    public Circle(double x, double y, double r) {
         this.x = x;
         this.y = y;
         this.r = r;
-        this.t = t;
+    }
+
+    public ComplexNumber getCenter() {
+        return new ComplexNumber(x, y);
     }
 
     @Override
     public String toString() {
-        return String.format("Circle[(%.2f, %.2f), %.2f, %.2f]", x, y, r, t);
+        return String.format("Circle[(%.2f, %.2f), %.2f]", x, y, r);
     }
 }

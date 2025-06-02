@@ -1,7 +1,7 @@
 package src.shapes;
 
 
-public class LineSegment {
+public class LineSegment extends Shape {
     public double x1, y1, x2, y2;
 
     public LineSegment(double x1, double y1, double x2, double y2) {
